@@ -5,42 +5,193 @@
   <meta charset="utf-8">
   <title>title</title>
   <link rel="stylesheet" href="css/bootstrap-slider.css">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
   <script src="script/bootstrap-slider.js"></script>
+  <script src="script/bootstrap.js"></script>
 </head>
 
 <body>
-  <span id="ex6CurrentSliderValLabel">Сумма, руб.: <span id="ex6SliderVal">50000</span></span>
-  <br />
-  <input id="ex6" type="text" data-slider-min="50000" data-slider-max="1000000" data-slider-step="50000" data-slider-value="50000" />
-  <br />
-  <span id="ex7CurrentSliderValLabel">Срок, месяцы: <span id="ex7SliderVal">3</span></span>
-  <br />
-  <input id="ex7" type="text" data-slider-min="3" data-slider-max="60" data-slider-step="3" data-slider-value="3" />
+  <div class='container'>
+    <div class="row w-50">
+      <div class="col">
+        <button type="button" id="btn_invest" class="btn btn-primary">Инвестор</button>
+      </div>
+      <div class="col">
+        <button type="button" id="btn_dol" class="btn">Долевой</button>
+      </div>
+      <div class="col">
+        <button type="button" id="btn_dream" class="btn">Мечта</button>
+      </div>
+      <div class="w-100 mt-5"></div>
+      <div class="col-3">
+        <span class="h4">Ставка</span></div>
+        <div><span id="proc" class="h4 text-center">6.5%</span></div>
+      <div class="w-100 mt-5"></div>
+      <div class="col-3"><span class="h4 mr-4">Сумма</span></div>
+      <div class="col"><input class="ml-3" id="ex6" type="text" data-slider-min="50000" data-slider-max="5000000" data-slider-step="50000" data-slider-value="50000" /></div>
+      <div class="w-100 mt-5"></div>
+      <div class="col-3"><span class="h4 mr-4">Месяцы</span></div>
+      <div class="col"><input id="ex7" type="text" data-slider-min="3" data-slider-max="60" data-slider-step="3" data-slider-value="3" /></div>
+      <div class="w-100 mt-5"></div>
+      <div class="col">
+        <span class="h4">Ожидаемый доход:</span>
+      </div>
+      <div class="col"><span class="h4" id="sum">57699 р.</span></div>
+    </div>
 
-  <br /><br />
-  <span>Ожидаемый доход:</span>&nbsp;<span id="sum">1233 р.</span>
+  </div>
+  </div>
+
+  </div>
+  </div>
+
 
 
 </body>
 
 <script>
+
+var slider1 = new Slider("#ex6", {
+  tooltip: 'always',
+});
+
+slider1.on("slide", function(sliderValue) {
+  document.getElementById("sum").textContent = recalc_sum();
+  //document.getElementById("sum").textContent = toSpaces(((sliderValue * 10 * 30 * slider2.getValue()) / 365 / 100).toFixed(0)) + " р.";
+
+});
+
+var slider2 = new Slider("#ex7", {
+  tooltip: 'always',
+});
+slider2.on("slide", function(sliderValue) {
+  document.getElementById("sum").textContent = recalc_sum();
+});
+
+
+  var tariffs = {
+    0: "btn_invest",
+    1: "btn_dol",
+    2: "btn_dream",
+  }
+
+  var currentTariff = 0;
+
+  var min_sum = 50000;
+  var max_sum = 5000000;
+
+  var min_monthes = 3;
+  var max_monthes = 24;
+
+  var rate = 6.5;
+
+
+
+  function initSliders() {
+    slider1.setValue(300000);
+    slider2.setValue(36);
+  }
+
+  initSliders();
+
   function toSpaces(value) {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   }
 
+  function toggleClasses(primary_id) {
+    for (i = 0; i < 3; i++) {
+      document.getElementById(tariffs[i]).className = "btn";
+    }
 
-  var slider = new Slider("#ex6");
-  slider.on("slide", function(sliderValue) {
-    document.getElementById("ex6SliderVal").textContent = toSpaces(sliderValue);
-    document.getElementById("sum").textContent = toSpaces((sliderValue * 10 * 30 * Number(document.getElementById("ex7SliderVal").textContent) / 365 / 100).toFixed(0)) + " р.";
+    document.getElementById(tariffs[primary_id]).className = "btn btn-primary";
+
+  }
+
+  document.getElementById(tariffs[0]).addEventListener("click", function() {
+    rate = 6.5;
+
+    document.getElementById('proc').innerHTML = rate + "%";
+
+    currentTariff = 0;
+    toggleClasses(0);
+
+    min_sum = 50000;
+    slider1.setAttribute('min', min_sum);
+    //slider1.setValue(min_sum);
+
+    min_monthes = 3;
+    slider2.setAttribute('min', min_monthes);
+    //slider2.setValue(min_monthes);
+
+    initSliders();
+
+    document.getElementById("sum").textContent = recalc_sum();
+
+
+
+
 
   });
 
-  var slider = new Slider("#ex7");
-  slider.on("slide", function(sliderValue) {
-    document.getElementById("ex7SliderVal").textContent = sliderValue;
-    document.getElementById("sum").textContent = toSpaces((Number(document.getElementById("ex6SliderVal").textContent.replace(/ /g, "")) * 10 * 30 * sliderValue / 365 / 100).toFixed(0)) + " р.";
+  document.getElementById(tariffs[1]).addEventListener("click", function() {
+    rate = 8.5;
+    document.getElementById('proc').innerHTML = rate + "%";
+
+    currentTariff = 1;
+    toggleClasses(1);
+
+    min_sum = 100000;
+    slider1.setAttribute('min', min_sum);
+    slider1.setAttribute('step', min_sum);
+    slider1.setValue(min_sum);
+
+    min_monthes = 12;
+    slider2.setAttribute('min', min_monthes);
+    slider2.setValue(min_monthes);
+
+    initSliders();
+
+    document.getElementById("sum").textContent = recalc_sum();
+
+
+
+
   });
+
+  document.getElementById(tariffs[2]).addEventListener("click", function() {
+    rate = 10;
+    document.getElementById('proc').innerHTML = rate + "%";
+
+    currentTariff = 2;
+    toggleClasses(2);
+
+    min_sum = 150000;
+    slider1.setAttribute('min', min_sum);
+    slider1.setAttribute('step', min_sum);
+    slider1.setValue(min_sum);
+
+
+    min_monthes = 36;
+    slider2.setAttribute('min', min_monthes);
+    slider2.setValue(min_monthes);
+
+    initSliders();
+
+    document.getElementById("sum").textContent = recalc_sum();
+
+
+  });
+
+
+  function recalc_sum(){
+    num = (slider1.getValue() * rate * 30 * slider2.getValue()) / 365 / 100;
+    return toSpaces(num.toFixed(0)) + "р."
+
+  }
+
+
+
+
 </script>
 
 </html>
